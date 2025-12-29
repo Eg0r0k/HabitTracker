@@ -9,7 +9,7 @@ export default defineConfig({
       "@": "/src",
     },
   },
-  base: "./",
+  base: "/HabitTracker/",
   build: {
     outDir: "dist",
   },
