@@ -14,6 +14,7 @@ declare global {
           disable: () => void;
           onClick: (fn: () => void) => void;
           offClick: (fn: () => void) => void;
+          setText: (text: string) => void;
           setParams: (params: {
             text?: string;
             color?: string;
@@ -89,15 +90,18 @@ const tg = typeof window !== "undefined" ? window.Telegram?.WebApp : null;
 export function initTelegramApp() {
   if (!tg) {
     console.warn("Not running in Telegram");
-    return;
+    return false;
   }
   tg.ready();
   tg.expand();
+  console.log("Telegram WebApp initialized!", tg);
+  return true;
 }
 
 export function useTelegram() {
   const user = tg?.initDataUnsafe?.user ?? null;
   const colorScheme = tg?.colorScheme ?? "light";
+  const isInTelegram = !!tg;
 
   const vibrate = (
     type: "success" | "error" | "warning" | "light" | "medium" | "heavy"
@@ -112,13 +116,24 @@ export function useTelegram() {
   };
 
   const showMainButton = (text: string, onClick: () => void) => {
-    if (!tg?.MainButton) return;
-    tg.MainButton.setParams({ text, is_visible: true });
+    if (!tg?.MainButton) {
+      console.warn("MainButton not available");
+      return;
+    }
+
+    console.log("Showing MainButton:", text);
+
+    tg.MainButton.setText(text);
     tg.MainButton.onClick(onClick);
+    tg.MainButton.show();
+
+    console.log("MainButton isVisible:", tg.MainButton.isVisible);
   };
 
   const hideMainButton = () => {
-    tg?.MainButton?.hide();
+    if (!tg?.MainButton) return;
+    console.log("Hiding MainButton");
+    tg.MainButton.hide();
   };
 
   const offMainButtonClick = (onClick: () => void) => {
@@ -126,20 +141,25 @@ export function useTelegram() {
   };
 
   const showBackButton = (onClick: () => void) => {
-    if (!tg?.BackButton) return;
-    tg.BackButton.show();
+    if (!tg?.BackButton) {
+      console.warn("BackButton not available");
+      return;
+    }
+    console.log("Showing BackButton");
     tg.BackButton.onClick(onClick);
+    tg.BackButton.show();
   };
 
   const hideBackButton = () => {
-    tg?.BackButton?.hide();
+    if (!tg?.BackButton) return;
+    console.log("Hiding BackButton");
+    tg.BackButton.hide();
   };
 
   const offBackButtonClick = (onClick: () => void) => {
     tg?.BackButton?.offClick(onClick);
   };
 
-  // Cloud Storage обёртки
   const saveToCloud = (key: string, data: unknown): Promise<void> => {
     return new Promise((resolve, reject) => {
       if (!tg?.CloudStorage) {
@@ -172,6 +192,7 @@ export function useTelegram() {
     tg,
     user,
     colorScheme,
+    isInTelegram,
     vibrate,
     showMainButton,
     hideMainButton,

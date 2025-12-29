@@ -17,6 +17,7 @@ export default function App() {
     hideBackButton,
     offBackButtonClick,
     vibrate,
+    isInTelegram,
   } = useTelegram();
 
   useEffect(() => {
@@ -35,7 +36,6 @@ export default function App() {
     }
   }, [page]);
 
-  // Back Button
   useEffect(() => {
     if (page !== "home") {
       const handleBack = () => setPage("home");
@@ -54,6 +54,25 @@ export default function App() {
     <div className="min-h-screen bg-tg-bg">
       {page === "home" && <Home />}
       {page === "add" && <AddHabit onSuccess={() => setPage("home")} />}
+
+      {!isInTelegram && page === "home" && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-tg-bg border-t">
+          <button
+            onClick={() => setPage("add")}
+            className="w-full py-4 bg-blue-500 text-white font-medium rounded-xl"
+          >
+            Добавить привычку
+          </button>
+        </div>
+      )}
+      {!isInTelegram && page !== "home" && (
+        <button
+          onClick={() => setPage("home")}
+          className="fixed top-4 left-4 p-2 bg-tg-secondary rounded-full"
+        >
+          ← Назад
+        </button>
+      )}
     </div>
   );
 }

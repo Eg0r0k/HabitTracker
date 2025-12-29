@@ -1,4 +1,3 @@
-// src/components/HabitCard.tsx
 import { useMemo } from "react";
 import { useHabitStore, helpers } from "../stores/useHabitStore";
 import { useTelegram } from "../hooks/useTelegram";
@@ -13,7 +12,6 @@ export function HabitCard({ habit }: Props) {
   const toggleHabit = useHabitStore((s) => s.toggleHabit);
   const logs = useHabitStore((s) => s.logs);
 
-  // ✅ Вычисляем в useMemo
   const completed = useMemo(
     () => helpers.isCompletedToday(logs, habit.id),
     [logs, habit.id]
